@@ -7,17 +7,18 @@ process CountKmers {
     time { 1.hour * task.attempt }
 
     input:
-        tuple val(sampleID), path(fastqs)
+        tuple val(sample), path(fastqs)
         val(norm_kiv2_fasta)
     
     output:
         path(jellyfish_kmers)
     
     script:
-        jellyfish_kmers = "${sampleID}.kmers"
+        jellyfish_kmers = "${sample}.kmers"
 
         """
         set -eo pipefail
+        
         ${params.tools.jellyfish} count -t ${task.cpus} \
             -m ${params.kmer_size} -s 100M -C \
             -o ${jellyfish_kmers} --if=${norm_kiv2_fasta} <(zcat -f ${fastqs.join(" ")});

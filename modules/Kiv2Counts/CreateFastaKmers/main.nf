@@ -1,6 +1,4 @@
 process CreateFastaKmers {
-    publishDir "${params.outdir}/", mode: 'copy'
-
     label 'kiv2Counts'
 
     cpus 1

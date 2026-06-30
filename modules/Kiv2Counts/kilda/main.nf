@@ -15,10 +15,11 @@ process kilda {
        path(quantiles)
     
     output:
-        path(kiv2_outdir)
+        path(kilda_CNs)
     
     script:
-        kiv2_outdir = "kilda_kiv2_CNs/"
+        kilda_out = "kilda_out/"
+        kilda_CNs = "${kilda_out}/kilda_kiv2.CNs"
         
         rsid_param = ""
         if("${params.rsids_list}" != "") {
@@ -32,8 +33,8 @@ process kilda {
         set -eo pipefail
 
         kilda.py \
-        -c ${counts_list} -o ${kiv2_outdir} -v -p \
-        -k ${kiv2_kmers} -l ${norm_kmers} \
-        ${rsid_param} ${q_params}
+            -c ${counts_list} -o ${kilda_out} -v \
+            -k ${kiv2_kmers} -l ${norm_kmers} \
+            ${rsid_param} ${q_params}
         """
 }
