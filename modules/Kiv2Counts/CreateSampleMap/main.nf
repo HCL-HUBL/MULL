@@ -6,7 +6,7 @@ process CreateSampleMap {
 
     cpus 1
     memory { 1.MB * task.attempt }
-    time { 1.hour * task.attempt }
+    time { 10.minute * task.attempt }
 
     input:
         path(counts)

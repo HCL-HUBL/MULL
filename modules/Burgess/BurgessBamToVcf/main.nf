@@ -4,9 +4,9 @@ process BurgessBamToVcf {
     label 'burgess'
     tag "${sample}"
 
-    cpus 1
+    cpus 3
     memory { 1.GB * task.attempt }
-    time { 1.hour * task.attempt }
+    time { 10.minute * task.attempt }
 
     input:
         tuple val(sample), path(bam), path(bai)

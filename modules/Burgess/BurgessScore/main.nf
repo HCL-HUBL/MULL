@@ -4,8 +4,8 @@ process BurgessScore {
     tag "${sample}"
 
     cpus 1
-    memory { 1.GB * task.attempt }
-    time { 1.hour * task.attempt }
+    memory { 100.MB * task.attempt }
+    time { 10.minute * task.attempt }
 
     input:
         tuple val(sample), path(vcf), path(tbi)

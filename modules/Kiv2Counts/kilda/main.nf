@@ -5,8 +5,8 @@ process kilda {
     label 'kiv2Counts'
 
     cpus 1
-    memory { 10.GB * task.attempt }
-    time { 2.hour * task.attempt }
+    memory { 1.GB * task.attempt }
+    time { 1.hour * task.attempt }
 
     input:
        path(kiv2_kmers)

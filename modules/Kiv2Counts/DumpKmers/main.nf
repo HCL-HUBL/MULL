@@ -5,8 +5,8 @@ process DumpKmers {
     label 'kiv2Counts'
 
     cpus 1
-    memory { 10.GB * task.attempt }
-    time { 1.hour * task.attempt }
+    memory { 100.MB * task.attempt }
+    time { 10.minute * task.attempt }
 
     input:
         path(jellyfish_kmers)

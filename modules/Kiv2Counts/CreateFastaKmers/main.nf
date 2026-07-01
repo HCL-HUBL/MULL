@@ -2,8 +2,8 @@ process CreateFastaKmers {
     label 'kiv2Counts'
 
     cpus 1
-    memory { 1.GB * task.attempt }
-    time { 1.hour * task.attempt }
+    memory { 10.MB * task.attempt }
+    time { 10.minute * task.attempt }
 
     input:
        path(kiv2_kmers)

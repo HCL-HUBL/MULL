@@ -4,8 +4,8 @@ process PrepareInput {
     label 'Model'
 
     cpus 1
-    memory { 1.GB * task.attempt }
-    time { 1.hour * task.attempt }
+    memory { 500.MB * task.attempt }
+    time { 10.minute * task.attempt }
 
     input:
         path(profiles_concat)

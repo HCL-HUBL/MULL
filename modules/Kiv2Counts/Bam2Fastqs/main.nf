@@ -5,8 +5,8 @@ process Bam2Fastqs {
     tag "${sample}"
 
     cpus 1
-    memory { 5.GB * task.attempt }
-    time { 1.hour * task.attempt }
+    memory { 100.MB * task.attempt }
+    time { 15.minute * task.attempt }
 
     input:
         tuple val(sample), path(bam), path(bai)
