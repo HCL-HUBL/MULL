@@ -5,7 +5,7 @@ process Bam2Fastqs {
     tag "${sample}"
 
     cpus 1
-    memory { 100.MB * task.attempt }
+    memory { 1.GB * task.attempt }
     time { 15.minute * task.attempt }
 
     input:
