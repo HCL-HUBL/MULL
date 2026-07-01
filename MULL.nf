@@ -15,42 +15,35 @@ include { DumpKmers }           from './modules/Kiv2Counts/DumpKmers'
 include { kilda }               from './modules/Kiv2Counts/kilda'
 
 include { PrepareInput }        from './modules/Model/PrepareInput'
+include { PredictLpa }          from './modules/Model/PredictLpa'
+
 
 // Default parameters:
 params.samplesheet      = ""
 params.ref              = ""
 params.outname          = "mull"
 params.outdir           = "./mull_out/"
+params.quantile         = ""
 
-params.burgess_vcf      = "${projectDir}/data/burgess_43_snps_sorted.vcf.gz"
-params.burgess_summary  = "${projectDir}/data/burgess_43_snps.summary"
-
+// Fixed parameters:
+params.burgess_vcf     = "${projectDir}/data/burgess_43_snps_sorted.vcf.gz"
+params.burgess_summary = "${projectDir}/data/burgess_43_snps.summary"
+params.kiv2_kmers      = "${projectDir}/data/KIV2_hg38_kmers_6copies_specific.fasta"
+params.norm_kmers      = "${projectDir}/data/LPA_hg38_kmers_1copies_specific.fasta"
+params.model           = "${projectDir}/data/SVM_lpa_model.RData"
 params.kmer_size        = 31
-params.kiv2_kmers       = "${projectDir}/data/KIV2_hg38_kmers_6copies_specific.fasta"
-params.norm_kmers       = "${projectDir}/data/LPA_hg38_kmers_1copies_specific.fasta"
 params.rsids_list       = "${projectDir}/data/lpa_model_rsids.tsv"
-params.quantiles        = ""
-
 
 // Checking the input parameters:
 if(params.samplesheet == "")        error("\nERROR: Samplesheet is missing (see config: 'samplesheet')")
 if(params.ref == "")                error("\nERROR: Path to the reference fasta file is missing (see config: 'ref')")
 
-if(params.burgess_vcf == "")        error("\nERROR: Path to the burgess VCF file is missing (see config: 'burgess_vcf')")
-if(params.burgess_summary == "")    error("\nERROR: Path to the burgess Summary file is missing (see config: 'burgess_summary')")
-
-if(params.kmer_size <= 0)           error("\nERROR: The kmer size must be positive (see config: 'kmer_size')")
-if(params.kiv2_kmers == "")         error("\nERROR: Path to the KIV-2 specific kmers fasta file is missing (see config: 'kiv2_kmers')")
-if(params.norm_kmers == "")         error("\nERROR: Path to the normalisation specific kmers fasta file is missing (see config: 'norm_kmers')")
-if(params.rsids_list == "")         error("\nERROR: Path to the rsids list for the Lp(a) model is missing (see config: 'rsids_list')")
-
-
 // Generating Channels:
-samplesheet_ch = Channel.fromPath("${params.samplesheet}")
-kiv2_kmers_ch  = Channel.fromPath("${params.kiv2_kmers}")
-norm_kmers_ch  = Channel.fromPath("${params.norm_kmers}")
-rsids_list_ch  = Channel.fromPath("${params.rsids_list}")
-
+samplesheet_ch  = Channel.fromPath("${params.samplesheet}")
+kiv2_kmers_ch   = Channel.fromPath("${params.kiv2_kmers}")
+norm_kmers_ch   = Channel.fromPath("${params.norm_kmers}")
+rsids_list_ch   = Channel.fromPath("${params.rsids_list}")
+model_ch        = Channel.fromPath("${params.model}")
 
 workflow BURGESS {
     take:
@@ -93,21 +86,28 @@ workflow KILDA {
 }
 
 
+workflow MODEL {
+    take:
+        profiles
+        kilda
+        model
+    
+    main:
+        PrepareInput(profiles, kilda)
+        PredictLpa(PrepareInput.out, model)
+}
+
+
 workflow {
     // The samplesheet should contain the sample id, the bam and the bai:
     input_bams_ch = samplesheet_ch.splitCsv(sep: '\t').map{ [ it[0], it[1], it[2] ] }
 
-    samplesheet_ch.view()
-    input_bams_ch.view()
-
     BURGESS(input_bams_ch)
     burgess_profiles = BURGESS.out
 
-    if(params.quantiles == "") {
-        quantiles_ch = []
-    } else {
-        quantiles_ch = Channel.fromPath(params.quantiles)
-    }
+
+    if(params.quantiles == "") { quantiles_ch = [] } 
+    else { quantiles_ch = Channel.fromPath(params.quantiles) }
 
     KILDA(input_bams_ch,
           kiv2_kmers_ch,
@@ -115,4 +115,9 @@ workflow {
           rsids_list_ch,
           quantiles_ch)
     kilda_cn = KILDA.out
+
+
+    MODEL(burgess_profiles,
+          kilda_cn,
+          model_ch)
 }
