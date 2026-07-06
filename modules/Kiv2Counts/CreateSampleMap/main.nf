@@ -20,7 +20,7 @@ process CreateSampleMap {
         
         for(String count : counts) {
             // "split("/").last()" as a basename, then removing the ".counts" to get the sampleID (cf previous processes for naming conventions)
-            sampleID = count.split("/").last().split(".counts").first()    
+            sampleID = count.split("/").last().split(".counts").first()
             list_content = list_content + sampleID + "\t${params.outdir}/counts/" + count + "\n"
         }
         // Remove the last trailing '\n' (empty final line)

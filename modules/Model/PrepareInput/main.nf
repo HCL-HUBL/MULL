@@ -1,6 +1,4 @@
 process PrepareInput {
-    publishDir "${params.outdir}/", mode: 'copy'
-    
     label 'Model'
 
     cpus 1

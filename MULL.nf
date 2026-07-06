@@ -23,7 +23,7 @@ params.samplesheet      = ""
 params.ref              = ""
 params.outname          = "mull"
 params.outdir           = "./mull_out/"
-params.quantile         = ""
+params.quantiles        = ""
 
 // Fixed parameters:
 params.burgess_vcf     = "${projectDir}/data/burgess_43_snps_sorted.vcf.gz"
