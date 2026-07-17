@@ -5,7 +5,7 @@ process BurgessBamToVcf {
     tag "${sample}"
 
     cpus 3
-    memory { 1.GB * task.attempt }
+    memory { 2.GB * task.attempt }
     time { 10.minute * task.attempt }
 
     input:
